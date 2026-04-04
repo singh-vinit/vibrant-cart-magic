@@ -7,9 +7,18 @@ import FilterSidebar, { type Filters } from "./FilterSidebar";
 interface FilterSheetProps {
   filters: Filters;
   onChange: (filters: Filters) => void;
+  categoryOptions: Array<{ label: string; value: string; emoji?: string }>;
+  brandOptions: string[];
+  maxPrice: number;
 }
 
-const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onChange }) => {
+const FilterSheet: React.FC<FilterSheetProps> = ({
+  filters,
+  onChange,
+  categoryOptions,
+  brandOptions,
+  maxPrice,
+}) => {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -22,7 +31,13 @@ const FilterSheet: React.FC<FilterSheetProps> = ({ filters, onChange }) => {
           <SheetTitle>Filters</SheetTitle>
         </SheetHeader>
         <div className="mt-4">
-          <FilterSidebar filters={filters} onChange={onChange} />
+          <FilterSidebar
+            filters={filters}
+            onChange={onChange}
+            categoryOptions={categoryOptions}
+            brandOptions={brandOptions}
+            maxPrice={maxPrice}
+          />
         </div>
       </SheetContent>
     </Sheet>

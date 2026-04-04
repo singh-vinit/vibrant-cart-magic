@@ -9,7 +9,7 @@ import FilterSidebar, { type Filters } from "@/components/FilterSidebar";
 import FilterSheet from "@/components/FilterSheet";
 import SortBar, { type SortOption } from "@/components/SortBar";
 import Footer from "@/components/Footer";
-import { products } from "@/lib/products";
+import { fetchCategories, fetchProducts, type CategoryOption } from "@/lib/products";
 import {
   Pagination,
   PaginationContent,
@@ -27,9 +27,11 @@ const Products: React.FC = () => {
   const categoryParam = searchParams.get("category") || "";
   const maxPriceParam = searchParams.get("maxPrice");
 
+  const initialMaxPrice = maxPriceParam ? Math.max(100, parseInt(maxPriceParam, 10)) : 3000;
+
   const [filters, setFilters] = useState<Filters>({
     categories: categoryParam ? [categoryParam] : [],
-    priceRange: [0, maxPriceParam ? parseInt(maxPriceParam) : 2000],
+    priceRange: [0, initialMaxPrice],
     brands: [],
     rating: 0,
     discount: 0,
@@ -37,29 +39,98 @@ const Products: React.FC = () => {
   const [sort, setSort] = useState<SortOption>("relevance");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [products, setProducts] = useState<Awaited<ReturnType<typeof fetchProducts>>>([]);
+  const [categoryOptions, setCategoryOptions] = useState<CategoryOption[]>([]);
 
   React.useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1200);
-    return () => clearTimeout(timer);
+    let cancelled = false;
+
+    const loadCategories = async () => {
+      try {
+        const data = await fetchCategories();
+        if (!cancelled) {
+          setCategoryOptions(data);
+        }
+      } catch {
+        if (!cancelled) {
+          setCategoryOptions([]);
+        }
+      }
+    };
+
+    loadCategories();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
+  React.useEffect(() => {
+    let cancelled = false;
+
+    const loadProducts = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await fetchProducts({
+          title: searchQuery || undefined,
+          priceMin: filters.priceRange[0],
+          priceMax: filters.priceRange[1],
+          categorySlug: filters.categories.length === 1 ? filters.categories[0] : undefined,
+          limit: 120,
+        });
+
+        if (!cancelled) {
+          setProducts(data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setProducts([]);
+          setError(err instanceof Error ? err.message : "Failed to fetch products");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadProducts();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [searchQuery, filters.priceRange, filters.categories]);
+
+  React.useEffect(() => {
+    setPage(1);
+  }, [searchQuery, filters, sort]);
+
+  const maxPrice = useMemo(() => {
+    const highestPrice = products.reduce((max, product) => Math.max(max, product.originalPrice), 0);
+    return Math.max(initialMaxPrice, highestPrice, 100);
+  }, [products, initialMaxPrice]);
+
+  React.useEffect(() => {
+    setFilters((previous) => {
+      if (previous.priceRange[1] <= maxPrice) {
+        return previous;
+      }
+      return {
+        ...previous,
+        priceRange: [previous.priceRange[0], maxPrice],
+      };
+    });
+  }, [maxPrice]);
 
   const filtered = useMemo(() => {
     let result = [...products];
 
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(
-        (p) => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)
-      );
-    }
-
     if (filters.categories.length > 0) {
-      result = result.filter((p) => filters.categories.includes(p.category));
+      result = result.filter((p) => filters.categories.includes(p.categorySlug));
     }
-
-    result = result.filter(
-      (p) => p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]
-    );
 
     if (filters.brands.length > 0) {
       result = result.filter((p) => filters.brands.includes(p.brand));
@@ -83,12 +154,34 @@ const Products: React.FC = () => {
       case "popularity":
         result.sort((a, b) => b.rating - a.rating);
         break;
+      case "newest":
+        result.sort((a, b) => Number(b.id) - Number(a.id));
+        break;
       default:
         break;
     }
 
     return result;
-  }, [filters, sort, searchQuery]);
+  }, [filters, sort, products]);
+
+  const brandOptions = useMemo(() => {
+    return Array.from(new Set(products.map((product) => product.brand))).sort();
+  }, [products]);
+
+  const categoryFilterOptions = useMemo(() => {
+    return categoryOptions.map((category) => ({
+      label: category.name,
+      value: category.slug,
+      emoji: category.emoji,
+    }));
+  }, [categoryOptions]);
+
+  const categoryLabelBySlug = useMemo(() => {
+    return categoryOptions.reduce<Record<string, string>>((acc, category) => {
+      acc[category.slug] = category.name;
+      return acc;
+    }, {});
+  }, [categoryOptions]);
 
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
   const paginated = filtered.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -96,7 +189,7 @@ const Products: React.FC = () => {
   const activeFilterTags: { label: string; clear: () => void }[] = [];
   filters.categories.forEach((c) =>
     activeFilterTags.push({
-      label: c,
+      label: categoryLabelBySlug[c] ?? c,
       clear: () => setFilters((f) => ({ ...f, categories: f.categories.filter((x) => x !== c) })),
     })
   );
@@ -126,14 +219,26 @@ const Products: React.FC = () => {
           {/* Desktop sidebar */}
           <aside className="hidden md:block w-64 shrink-0">
             <div className="sticky top-20 border rounded-lg p-4">
-              <FilterSidebar filters={filters} onChange={setFilters} />
+              <FilterSidebar
+                filters={filters}
+                onChange={setFilters}
+                categoryOptions={categoryFilterOptions}
+                brandOptions={brandOptions}
+                maxPrice={maxPrice}
+              />
             </div>
           </aside>
 
           {/* Main */}
           <div className="flex-1 space-y-4">
             <div className="flex items-center gap-2">
-              <FilterSheet filters={filters} onChange={setFilters} />
+              <FilterSheet
+                filters={filters}
+                onChange={setFilters}
+                categoryOptions={categoryFilterOptions}
+                brandOptions={brandOptions}
+                maxPrice={maxPrice}
+              />
               <div className="flex-1">
                 <SortBar value={sort} onChange={setSort} totalResults={filtered.length} />
               </div>
@@ -157,7 +262,9 @@ const Products: React.FC = () => {
               </p>
             )}
 
-            {loading ? (
+            {error && !loading ? (
+              <div className="text-center py-20 text-destructive">{error}</div>
+            ) : loading ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div key={i}>

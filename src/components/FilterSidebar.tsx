@@ -3,7 +3,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { Star } from "lucide-react";
-import { categories, brands } from "@/lib/products";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -18,6 +17,9 @@ export interface Filters {
 interface FilterSidebarProps {
   filters: Filters;
   onChange: (filters: Filters) => void;
+  categoryOptions: Array<{ label: string; value: string; emoji?: string }>;
+  brandOptions: string[];
+  maxPrice: number;
 }
 
 const discountOptions = [
@@ -26,7 +28,13 @@ const discountOptions = [
   { label: "50%+", value: 50 },
 ];
 
-const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onChange }) => {
+const FilterSidebar: React.FC<FilterSidebarProps> = ({
+  filters,
+  onChange,
+  categoryOptions,
+  brandOptions,
+  maxPrice,
+}) => {
   const toggleCategory = (cat: string) => {
     const next = filters.categories.includes(cat)
       ? filters.categories.filter((c) => c !== cat)
@@ -42,7 +50,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onChange }) => {
   };
 
   const clearAll = () =>
-    onChange({ categories: [], priceRange: [0, 2000], brands: [], rating: 0, discount: 0 });
+    onChange({ categories: [], priceRange: [0, maxPrice], brands: [], rating: 0, discount: 0 });
 
   return (
     <div className="space-y-6">
@@ -56,14 +64,15 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onChange }) => {
       {/* Category */}
       <div className="space-y-2">
         <Label className="font-medium text-foreground">Category</Label>
-        {categories.map((cat) => (
-          <label key={cat.name} className="flex items-center gap-2 cursor-pointer">
+        {categoryOptions.map((cat) => (
+          <label key={cat.value} className="flex items-center gap-2 cursor-pointer">
             <Checkbox
-              checked={filters.categories.includes(cat.name)}
-              onCheckedChange={() => toggleCategory(cat.name)}
+              checked={filters.categories.includes(cat.value)}
+              onCheckedChange={() => toggleCategory(cat.value)}
             />
             <span className="text-sm text-foreground">
-              {cat.emoji} {cat.name}
+              {cat.emoji ? `${cat.emoji} ` : ""}
+              {cat.label}
             </span>
           </label>
         ))}
@@ -74,7 +83,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onChange }) => {
         <Label className="font-medium text-foreground">Price Range</Label>
         <Slider
           min={0}
-          max={2000}
+          max={maxPrice}
           step={50}
           value={filters.priceRange}
           onValueChange={(v) => onChange({ ...filters, priceRange: v as [number, number] })}
@@ -88,7 +97,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ filters, onChange }) => {
       {/* Brands */}
       <div className="space-y-2">
         <Label className="font-medium text-foreground">Brand</Label>
-        {brands.map((brand) => (
+        {brandOptions.map((brand) => (
           <label key={brand} className="flex items-center gap-2 cursor-pointer">
             <Checkbox
               checked={filters.brands.includes(brand)}

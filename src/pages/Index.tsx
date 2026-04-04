@@ -10,7 +10,7 @@ import ProductCard from "@/components/ProductCard";
 import ProductGrid from "@/components/ProductGrid";
 import CountdownTimer from "@/components/CountdownTimer";
 import Footer from "@/components/Footer";
-import { products } from "@/lib/products";
+import { fetchProducts, type Product } from "@/lib/products";
 
 const budgetTiles = [
   { label: "Under ₹99", max: 99, gradient: "from-primary to-secondary" },
@@ -22,10 +22,38 @@ const budgetTiles = [
 const Index: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1200);
-    return () => clearTimeout(timer);
+    let cancelled = false;
+
+    const loadProducts = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await fetchProducts({ limit: 40 });
+        if (!cancelled) {
+          setProducts(data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setProducts([]);
+          setError(err instanceof Error ? err.message : "Failed to load products");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadProducts();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -35,7 +63,7 @@ const Index: React.FC = () => {
   }, []);
 
   const trending = products.filter((p) => p.badge === "Trending" || p.badge === "Bestseller").slice(0, 8);
-  const topDeals = products.slice(0, 8);
+  const topDeals = [...products].sort((a, b) => b.discount - a.discount).slice(0, 8);
 
   return (
     <div className="min-h-screen bg-background">
@@ -54,7 +82,9 @@ const Index: React.FC = () => {
         {/* Trending */}
         <section>
           <h2 className="text-xl font-bold text-foreground mb-4">🔥 Trending Now</h2>
-          {loading ? (
+          {error && !loading ? (
+            <p className="text-sm text-destructive">{error}</p>
+          ) : loading ? (
             <div className="flex gap-4 overflow-x-auto pb-2">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="min-w-[200px]">
@@ -81,7 +111,9 @@ const Index: React.FC = () => {
             <h2 className="text-xl font-bold text-foreground">⚡ Top Deals of the Day</h2>
             <CountdownTimer />
           </div>
-          {loading ? (
+          {error && !loading ? (
+            <p className="text-sm text-destructive">{error}</p>
+          ) : loading ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i}>

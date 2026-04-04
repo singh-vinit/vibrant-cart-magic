@@ -2,6 +2,7 @@ export interface Product {
   id: string;
   name: string;
   category: string;
+  categorySlug: string;
   brand: string;
   price: number;
   originalPrice: number;
@@ -12,330 +13,158 @@ export interface Product {
   badge?: "Bestseller" | "New" | "Trending";
 }
 
-export const categories = [
-  { name: "Fashion", emoji: "👗", color: "hsl(330, 91%, 58%)" },
-  { name: "Electronics", emoji: "📱", color: "hsl(262, 93%, 58%)" },
-  { name: "Home & Kitchen", emoji: "🏠", color: "hsl(200, 80%, 50%)" },
-  { name: "Beauty", emoji: "💄", color: "hsl(340, 80%, 60%)" },
-  { name: "Toys", emoji: "🧸", color: "hsl(30, 90%, 55%)" },
-  { name: "Sports", emoji: "⚽", color: "hsl(140, 60%, 45%)" },
+export interface CategoryVisual {
+  emoji: string;
+  color: string;
+}
+
+export interface CategoryOption extends CategoryVisual {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+interface ApiCategory {
+  id: number;
+  name: string;
+  slug: string;
+  image: string;
+}
+
+interface ApiProduct {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  category: ApiCategory;
+  images: string[];
+}
+
+interface FetchProductsParams {
+  title?: string;
+  categoryId?: number;
+  categorySlug?: string;
+  priceMin?: number;
+  priceMax?: number;
+  limit?: number;
+  offset?: number;
+}
+
+const API_BASE = "https://api.escuelajs.co/api/v1";
+
+const categoryVisualMap: Record<string, CategoryVisual> = {
+  clothes: { emoji: "👕", color: "hsl(330, 91%, 58%)" },
+  electronics: { emoji: "📱", color: "hsl(262, 93%, 58%)" },
+  furniture: { emoji: "🛋️", color: "hsl(200, 80%, 50%)" },
+  shoes: { emoji: "👟", color: "hsl(30, 90%, 55%)" },
+  misc: { emoji: "✨", color: "hsl(140, 60%, 45%)" },
+};
+
+const fallbackCategoryVisuals: CategoryVisual[] = [
+  { emoji: "🛍️", color: "hsl(340, 80%, 60%)" },
+  { emoji: "🎯", color: "hsl(20, 88%, 56%)" },
+  { emoji: "🎁", color: "hsl(210, 75%, 52%)" },
+  { emoji: "🔥", color: "hsl(12, 90%, 58%)" },
 ];
 
-export const brands = [
-  "Generic", "boAt", "Noise", "Lakme", "Mamaearth", "WOW", "LEGO",
-  "Boldfit", "Nivia", "Cosco",
-];
+const toHash = (value: string): number => {
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+};
 
-export const products: Product[] = [
-  // FASHION
-  {
-    id: "f1",
-    name: "Women's Floral Kurta Set",
-    category: "Fashion",
-    brand: "Generic",
-    price: 549,
-    originalPrice: 1299,
-    discount: 58,
-    rating: 4.3,
-    reviews: "2.1k",
-    image: "https://fakestoreapi.com/img/71-3HjGNDUL._AC_SY879._SX._UX._SY._UY_.jpg",
-    badge: "Bestseller",
-  },
-  {
-    id: "f2",
-    name: "Men's Slim Fit Casual Shirt",
-    category: "Fashion",
-    brand: "Generic",
-    price: 399,
-    originalPrice: 899,
-    discount: 56,
-    rating: 4.1,
-    reviews: "1.4k",
-    image: "https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg",
-    badge: "Trending",
-  },
-  {
-    id: "f3",
-    name: "Women's Printed Palazzo Pants",
-    category: "Fashion",
-    brand: "Generic",
-    price: 299,
-    originalPrice: 699,
-    discount: 57,
-    rating: 4.0,
-    reviews: "980",
-    image: "https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_FMwebp_QL65_.jpg",
-  },
-  {
-    id: "f4",
-    name: "Men's Cotton Joggers",
-    category: "Fashion",
-    brand: "Generic",
-    price: 449,
-    originalPrice: 999,
-    discount: 55,
-    rating: 4.2,
-    reviews: "1.8k",
-    image: "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg",
-    badge: "New",
-  },
-  // ELECTRONICS
-  {
-    id: "e1",
-    name: "boAt Bassheads 100 Earphones",
-    category: "Electronics",
-    brand: "boAt",
-    price: 399,
-    originalPrice: 999,
-    discount: 60,
-    rating: 4.2,
-    reviews: "52k",
-    image: "https://fakestoreapi.com/img/61IBBVJvSDL._AC_SY879_.jpg",
-    badge: "Bestseller",
-  },
-  {
-    id: "e2",
-    name: "Noise ColorFit Pulse Smartwatch",
-    category: "Electronics",
-    brand: "Noise",
-    price: 1499,
-    originalPrice: 3999,
-    discount: 63,
-    rating: 4.4,
-    reviews: "31k",
-    image: "https://fakestoreapi.com/img/61mtL65D4cL._AC_SX679_.jpg",
-    badge: "Trending",
-  },
-  {
-    id: "e3",
-    name: "USB-C Fast Charger 65W",
-    category: "Electronics",
-    brand: "Generic",
-    price: 599,
-    originalPrice: 1299,
-    discount: 54,
-    rating: 4.1,
-    reviews: "8.7k",
-    image: "https://fakestoreapi.com/img/61U7T1koQqL._AC_SX679_.jpg",
-  },
-  {
-    id: "e4",
-    name: "Wireless Bluetooth Speaker",
-    category: "Electronics",
-    brand: "boAt",
-    price: 899,
-    originalPrice: 1999,
-    discount: 55,
-    rating: 4.3,
-    reviews: "12k",
-    image: "https://fakestoreapi.com/img/51UDEzMJVpL._AC_UL640_QL65_ML3_.jpg",
-    badge: "New",
-  },
-  // HOME & KITCHEN
-  {
-    id: "h1",
-    name: "Stainless Steel Water Bottle 1L",
-    category: "Home & Kitchen",
-    brand: "Generic",
-    price: 249,
-    originalPrice: 599,
-    discount: 58,
-    rating: 4.5,
-    reviews: "14k",
-    image: "https://picsum.photos/seed/bottle/400/400",
-    badge: "Bestseller",
-  },
-  {
-    id: "h2",
-    name: "Non-Stick Fry Pan 24cm",
-    category: "Home & Kitchen",
-    brand: "Generic",
-    price: 449,
-    originalPrice: 999,
-    discount: 55,
-    rating: 4.3,
-    reviews: "6.2k",
-    image: "https://picsum.photos/seed/frypan/400/400",
-  },
-  {
-    id: "h3",
-    name: "Bamboo Cutting Board Set",
-    category: "Home & Kitchen",
-    brand: "Generic",
-    price: 349,
-    originalPrice: 799,
-    discount: 56,
-    rating: 4.2,
-    reviews: "3.1k",
-    image: "https://picsum.photos/seed/cuttingboard/400/400",
-    badge: "Trending",
-  },
-  {
-    id: "h4",
-    name: "Electric Kettle 1.5L",
-    category: "Home & Kitchen",
-    brand: "Generic",
-    price: 599,
-    originalPrice: 1299,
-    discount: 54,
-    rating: 4.4,
-    reviews: "9.3k",
-    image: "https://picsum.photos/seed/kettle/400/400",
-  },
-  // BEAUTY
-  {
-    id: "b1",
-    name: "Lakme Absolute Matte Lipstick",
-    category: "Beauty",
-    brand: "Lakme",
-    price: 299,
-    originalPrice: 550,
-    discount: 46,
-    rating: 4.4,
-    reviews: "9.8k",
-    image: "https://picsum.photos/seed/lipstick/400/400",
-    badge: "Bestseller",
-  },
-  {
-    id: "b2",
-    name: "Mamaearth Vitamin C Face Wash",
-    category: "Beauty",
-    brand: "Mamaearth",
-    price: 199,
-    originalPrice: 399,
-    discount: 50,
-    rating: 4.3,
-    reviews: "22k",
-    image: "https://picsum.photos/seed/facewash/400/400",
-    badge: "Trending",
-  },
-  {
-    id: "b3",
-    name: "WOW Skin Science Hair Oil",
-    category: "Beauty",
-    brand: "WOW",
-    price: 349,
-    originalPrice: 699,
-    discount: 50,
-    rating: 4.2,
-    reviews: "17k",
-    image: "https://picsum.photos/seed/hairoil/400/400",
-  },
-  {
-    id: "b4",
-    name: "Mamaearth Ubtan Face Mask",
-    category: "Beauty",
-    brand: "Mamaearth",
-    price: 249,
-    originalPrice: 499,
-    discount: 50,
-    rating: 4.1,
-    reviews: "5.6k",
-    image: "https://picsum.photos/seed/facemask/400/400",
-    badge: "New",
-  },
-  // TOYS
-  {
-    id: "t1",
-    name: "LEGO Classic Brick Box",
-    category: "Toys",
-    brand: "LEGO",
-    price: 999,
-    originalPrice: 1999,
-    discount: 50,
-    rating: 4.6,
-    reviews: "5.4k",
-    image: "https://picsum.photos/seed/lego/400/400",
-    badge: "Bestseller",
-  },
-  {
-    id: "t2",
-    name: "Remote Control Racing Car",
-    category: "Toys",
-    brand: "Generic",
-    price: 699,
-    originalPrice: 1499,
-    discount: 53,
-    rating: 4.1,
-    reviews: "3.2k",
-    image: "https://picsum.photos/seed/rccar/400/400",
-    badge: "Trending",
-  },
-  {
-    id: "t3",
-    name: "Wooden Puzzle Set for Kids",
-    category: "Toys",
-    brand: "Generic",
-    price: 349,
-    originalPrice: 799,
-    discount: 56,
-    rating: 4.4,
-    reviews: "2.8k",
-    image: "https://picsum.photos/seed/puzzle/400/400",
-  },
-  {
-    id: "t4",
-    name: "Board Game Family Pack",
-    category: "Toys",
-    brand: "Generic",
-    price: 599,
-    originalPrice: 1199,
-    discount: 50,
-    rating: 4.3,
-    reviews: "1.9k",
-    image: "https://picsum.photos/seed/boardgame/400/400",
-    badge: "New",
-  },
-  // SPORTS
-  {
-    id: "s1",
-    name: "Boldfit Resistance Bands Set",
-    category: "Sports",
-    brand: "Boldfit",
-    price: 299,
-    originalPrice: 699,
-    discount: 57,
-    rating: 4.3,
-    reviews: "11k",
-    image: "https://picsum.photos/seed/fitness/400/400",
-    badge: "Bestseller",
-  },
-  {
-    id: "s2",
-    name: "Nivia Carbonite Football",
-    category: "Sports",
-    brand: "Nivia",
-    price: 549,
-    originalPrice: 999,
-    discount: 45,
-    rating: 4.2,
-    reviews: "4.5k",
-    image: "https://picsum.photos/seed/football/400/400",
-  },
-  {
-    id: "s3",
-    name: "Cosco Badminton Racquet Pair",
-    category: "Sports",
-    brand: "Cosco",
-    price: 799,
-    originalPrice: 1599,
-    discount: 50,
-    rating: 4.1,
-    reviews: "2.9k",
-    image: "https://picsum.photos/seed/badminton/400/400",
-    badge: "Trending",
-  },
-  {
-    id: "s4",
-    name: "Yoga Mat Premium 6mm",
-    category: "Sports",
-    brand: "Boldfit",
-    price: 399,
-    originalPrice: 899,
-    discount: 56,
-    rating: 4.4,
-    reviews: "7.8k",
-    image: "https://picsum.photos/seed/yogamat/400/400",
-    badge: "New",
-  },
-];
+const formatReviews = (value: number): string => {
+  if (value >= 1000) {
+    const rounded = Math.round((value / 1000) * 10) / 10;
+    return `${rounded}k`;
+  }
+  return `${value}`;
+};
+
+const deriveBrand = (title: string): string => {
+  const firstWord = title
+    .replace(/[^a-zA-Z0-9\s]/g, "")
+    .trim()
+    .split(/\s+/)[0];
+
+  return firstWord ? firstWord.slice(0, 1).toUpperCase() + firstWord.slice(1) : "Generic";
+};
+
+export const getCategoryVisual = (slug: string): CategoryVisual => {
+  const normalizedSlug = slug.toLowerCase();
+  const fallback = fallbackCategoryVisuals[toHash(normalizedSlug) % fallbackCategoryVisuals.length];
+  return categoryVisualMap[normalizedSlug] ?? fallback;
+};
+
+const getBadge = (seed: number): Product["badge"] => {
+  const mod = seed % 12;
+  if (mod < 3) return "Bestseller";
+  if (mod < 6) return "Trending";
+  if (mod < 8) return "New";
+  return undefined;
+};
+
+const mapApiProductToProduct = (apiProduct: ApiProduct): Product => {
+  const seed = toHash(`${apiProduct.id}-${apiProduct.title}`);
+  const markupPercent = 20 + (seed % 35);
+  const originalPrice = Math.max(
+    apiProduct.price + 1,
+    Math.round((apiProduct.price * (100 + markupPercent)) / 100)
+  );
+  const discount = Math.max(1, Math.round(((originalPrice - apiProduct.price) / originalPrice) * 100));
+  const rating = Math.round((3.5 + ((seed % 15) / 10)) * 10) / 10;
+  const reviews = formatReviews(150 + (seed % 24000));
+
+  return {
+    id: String(apiProduct.id),
+    name: apiProduct.title,
+    category: apiProduct.category.name,
+    categorySlug: apiProduct.category.slug,
+    brand: deriveBrand(apiProduct.title),
+    price: apiProduct.price,
+    originalPrice,
+    discount,
+    rating,
+    reviews,
+    image: apiProduct.images[0] || apiProduct.category.image,
+    badge: getBadge(seed),
+  };
+};
+
+export const fetchProducts = async (params: FetchProductsParams = {}): Promise<Product[]> => {
+  const query = new URLSearchParams();
+
+  if (params.title) query.set("title", params.title);
+  if (params.categoryId) query.set("categoryId", String(params.categoryId));
+  if (params.categorySlug) query.set("categorySlug", params.categorySlug);
+  if (typeof params.priceMin === "number") query.set("price_min", String(params.priceMin));
+  if (typeof params.priceMax === "number") query.set("price_max", String(params.priceMax));
+  query.set("limit", String(params.limit ?? 120));
+  query.set("offset", String(params.offset ?? 0));
+
+  const response = await fetch(`${API_BASE}/products?${query.toString()}`);
+  if (!response.ok) {
+    throw new Error(`Products API failed with status ${response.status}`);
+  }
+
+  const data = (await response.json()) as ApiProduct[];
+  return data.map(mapApiProductToProduct);
+};
+
+export const fetchCategories = async (): Promise<CategoryOption[]> => {
+  const response = await fetch(`${API_BASE}/categories`);
+  if (!response.ok) {
+    throw new Error(`Categories API failed with status ${response.status}`);
+  }
+
+  const data = (await response.json()) as ApiCategory[];
+
+  return data.map((category) => ({
+    id: category.id,
+    name: category.name,
+    slug: category.slug,
+    ...getCategoryVisual(category.slug),
+  }));
+};
