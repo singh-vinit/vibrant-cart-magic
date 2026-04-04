@@ -108,7 +108,7 @@ const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({ onTranscript }) =
         size="icon"
         onClick={handleClick}
         className={cn(
-          "relative rounded-full h-9 w-9 transition-all",
+          "relative h-11 w-11 rounded-full border border-border/70 bg-white/75 transition-all shadow-sm",
           state === "listening" && "text-red-500",
           state === "processing" && "text-muted-foreground",
           state === "success" && "text-green-500",

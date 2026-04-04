@@ -22,11 +22,11 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" size="sm" className="md:hidden">
-          <Filter className="h-4 w-4 mr-1" /> Filters
+        <Button variant="outline" size="sm" className="rounded-full bg-white/80 md:hidden">
+          <Filter className="mr-1 h-4 w-4" /> Filters
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="overflow-y-auto">
+      <SheetContent side="left" className="overflow-y-auto bg-background/95">
         <SheetHeader>
           <SheetTitle>Filters</SheetTitle>
         </SheetHeader>

@@ -1,8 +1,7 @@
 import React from "react";
-import { Star } from "lucide-react";
+import { Star, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { useCart } from "@/contexts/CartContext";
 import type { Product } from "@/lib/products";
 
@@ -14,44 +13,49 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addToCart } = useCart();
 
   return (
-    <Card className="group overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-xl border-border/50">
-      <div className="relative aspect-square overflow-hidden bg-muted">
+    <article className="group">
+      <div className="relative aspect-[0.9] overflow-hidden rounded-[1.6rem] bg-muted">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-80" />
         {product.badge && (
-          <Badge className="absolute top-2 left-2 bg-accent text-accent-foreground text-[10px] font-bold">
+          <Badge className="absolute left-3 top-3 border-0 bg-white/90 text-[10px] font-semibold text-secondary">
             {product.badge}
           </Badge>
         )}
-        <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground text-[10px]">
+        <Badge className="absolute right-3 top-3 border-0 bg-primary text-[10px] text-primary-foreground">
           {product.discount}% OFF
         </Badge>
         <Button
-          size="sm"
+          size="icon"
           onClick={() => addToCart(product)}
-          className="absolute bottom-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity gradient-pink-purple text-primary-foreground text-xs"
+          className="absolute bottom-3 right-3 h-11 w-11 rounded-full bg-white text-secondary opacity-100 shadow-lg transition-transform hover:scale-105 group-hover:-translate-y-1"
         >
-          Add to Cart
+          <Plus className="h-4 w-4" />
         </Button>
       </div>
-      <CardContent className="p-3">
-        <h3 className="text-sm font-medium line-clamp-2 mb-1 text-foreground">{product.name}</h3>
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-base font-bold text-foreground">₹{product.price}</span>
-          <span className="text-xs text-muted-foreground line-through">₹{product.originalPrice}</span>
+      <div className="space-y-2 px-1 pb-1 pt-4">
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">{product.category}</p>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Star className="h-3.5 w-3.5 fill-accent text-accent" />
+            <span>{product.rating}</span>
+          </div>
         </div>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <Star className="h-3 w-3 fill-accent text-accent" />
-          <span>{product.rating}</span>
-          <span>•</span>
-          <span>{product.reviews} reviews</span>
+        <h3 className="line-clamp-2 text-sm font-semibold leading-6 text-foreground">{product.name}</h3>
+        <div className="flex items-end justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-semibold text-foreground">₹{product.price}</span>
+            <span className="text-xs text-muted-foreground line-through">₹{product.originalPrice}</span>
+          </div>
+          <span className="text-xs text-muted-foreground">{product.reviews} reviews</span>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </article>
   );
 };
 

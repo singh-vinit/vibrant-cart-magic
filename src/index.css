@@ -4,49 +4,49 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 270 10% 10%;
+    --background: 36 43% 97%;
+    --foreground: 220 30% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 270 10% 10%;
+    --card-foreground: 220 30% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 270 10% 10%;
+    --popover-foreground: 220 30% 12%;
 
-    --primary: 330 91% 58%;
+    --primary: 18 88% 56%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 262 93% 58%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 160 33% 23%;
+    --secondary-foreground: 36 43% 97%;
 
-    --muted: 270 100% 98%;
-    --muted-foreground: 270 5% 45%;
+    --muted: 35 32% 92%;
+    --muted-foreground: 220 12% 38%;
 
-    --accent: 51 100% 50%;
-    --accent-foreground: 270 10% 10%;
+    --accent: 45 95% 58%;
+    --accent-foreground: 220 30% 12%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 270 20% 90%;
-    --input: 270 20% 90%;
-    --ring: 330 91% 58%;
+    --border: 34 25% 84%;
+    --input: 34 25% 84%;
+    --ring: 18 88% 56%;
 
-    --radius: 0.75rem;
+    --radius: 1.25rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 330 91% 58%;
+    --sidebar-background: 36 43% 97%;
+    --sidebar-foreground: 220 30% 12%;
+    --sidebar-primary: 18 88% 56%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 270 100% 98%;
-    --sidebar-accent-foreground: 270 10% 10%;
-    --sidebar-border: 270 20% 90%;
-    --sidebar-ring: 330 91% 58%;
+    --sidebar-accent: 35 32% 92%;
+    --sidebar-accent-foreground: 220 30% 12%;
+    --sidebar-border: 34 25% 84%;
+    --sidebar-ring: 18 88% 56%;
 
-    --shop-pink: 330 91% 58%;
-    --shop-purple: 262 93% 58%;
-    --shop-gold: 51 100% 50%;
-    --shop-lavender: 270 100% 98%;
+    --shop-coral: 18 88% 56%;
+    --shop-ink: 220 30% 12%;
+    --shop-sage: 160 33% 23%;
+    --shop-sand: 36 43% 97%;
   }
 
   .dark {
@@ -95,12 +95,28 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    background-image:
+      radial-gradient(circle at top left, hsl(var(--accent) / 0.16), transparent 25%),
+      linear-gradient(180deg, hsl(var(--background)), hsl(30 25% 95%));
   }
 }
 
 @layer utilities {
   .gradient-pink-purple {
-    @apply bg-gradient-to-r from-primary to-secondary;
+    @apply bg-gradient-to-r from-primary via-primary to-accent;
+  }
+
+  .gradient-ink {
+    background: linear-gradient(135deg, hsl(var(--secondary)), hsl(220 25% 16%));
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .surface-blur {
+    backdrop-filter: blur(18px);
   }
 }

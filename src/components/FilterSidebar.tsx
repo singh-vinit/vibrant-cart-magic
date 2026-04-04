@@ -55,17 +55,16 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-foreground">Filters</h3>
-        <Button variant="ghost" size="sm" onClick={clearAll} className="text-xs text-primary">
+        <h3 className="text-base font-semibold text-foreground">Filters</h3>
+        <Button variant="ghost" size="sm" onClick={clearAll} className="text-xs text-primary hover:text-secondary">
           Clear All
         </Button>
       </div>
 
-      {/* Category */}
-      <div className="space-y-2">
+      <div className="space-y-3 rounded-[1.4rem] border border-border/70 bg-white/65 p-4">
         <Label className="font-medium text-foreground">Category</Label>
         {categoryOptions.map((cat) => (
-          <label key={cat.value} className="flex items-center gap-2 cursor-pointer">
+          <label key={cat.value} className="flex cursor-pointer items-center gap-2">
             <Checkbox
               checked={filters.categories.includes(cat.value)}
               onCheckedChange={() => toggleCategory(cat.value)}
@@ -78,8 +77,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         ))}
       </div>
 
-      {/* Price */}
-      <div className="space-y-3">
+      <div className="space-y-3 rounded-[1.4rem] border border-border/70 bg-white/65 p-4">
         <Label className="font-medium text-foreground">Price Range</Label>
         <Slider
           min={0}
@@ -94,11 +92,10 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </div>
       </div>
 
-      {/* Brands */}
-      <div className="space-y-2">
+      <div className="space-y-3 rounded-[1.4rem] border border-border/70 bg-white/65 p-4">
         <Label className="font-medium text-foreground">Brand</Label>
         {brandOptions.map((brand) => (
-          <label key={brand} className="flex items-center gap-2 cursor-pointer">
+          <label key={brand} className="flex cursor-pointer items-center gap-2">
             <Checkbox
               checked={filters.brands.includes(brand)}
               onCheckedChange={() => toggleBrand(brand)}
@@ -108,10 +105,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         ))}
       </div>
 
-      {/* Rating */}
-      <div className="space-y-2">
+      <div className="space-y-3 rounded-[1.4rem] border border-border/70 bg-white/65 p-4">
         <Label className="font-medium text-foreground">Minimum Rating</Label>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {[4, 3, 2, 1].map((r) => (
             <Badge
               key={r}
@@ -125,10 +121,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
         </div>
       </div>
 
-      {/* Discount */}
-      <div className="space-y-2">
+      <div className="space-y-3 rounded-[1.4rem] border border-border/70 bg-white/65 p-4">
         <Label className="font-medium text-foreground">Discount</Label>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {discountOptions.map((d) => (
             <Badge
               key={d.value}

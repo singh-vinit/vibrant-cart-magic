@@ -11,10 +11,10 @@ interface SortBarProps {
 
 const SortBar: React.FC<SortBarProps> = ({ value, onChange, totalResults }) => {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-3 rounded-[1.4rem] border border-border/70 bg-white/70 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
       <span className="text-sm text-muted-foreground">{totalResults} products</span>
       <Select value={value} onValueChange={(v) => onChange(v as SortOption)}>
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-full rounded-full border-border/80 bg-background sm:w-[200px]">
           <SelectValue placeholder="Sort by" />
         </SelectTrigger>
         <SelectContent>

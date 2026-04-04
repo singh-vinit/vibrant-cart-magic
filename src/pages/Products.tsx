@@ -214,11 +214,20 @@ const Products: React.FC = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <div className="container py-6">
+      <div className="container py-6 md:py-8">
+        <div className="mb-8 rounded-[2rem] border border-border/70 bg-white/70 px-6 py-8 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">Catalog</p>
+          <h1 className="mt-3 text-3xl font-semibold text-foreground sm:text-4xl">
+            Discover products without the usual marketplace noise.
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
+            Use search, filters, and sorting to move from a broad browse to a sharper shortlist in a few taps.
+          </p>
+        </div>
         <div className="flex gap-6">
           {/* Desktop sidebar */}
           <aside className="hidden md:block w-64 shrink-0">
-            <div className="sticky top-20 border rounded-lg p-4">
+            <div className="sticky top-24 rounded-[1.75rem] border border-border/70 bg-background/75 p-4 shadow-sm">
               <FilterSidebar
                 filters={filters}
                 onChange={setFilters}
@@ -248,7 +257,7 @@ const Products: React.FC = () => {
             {activeFilterTags.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {activeFilterTags.map((tag, i) => (
-                  <Badge key={i} variant="secondary" className="gap-1 cursor-pointer" onClick={tag.clear}>
+                  <Badge key={i} variant="secondary" className="cursor-pointer gap-1 rounded-full bg-white/80 px-3 py-1.5" onClick={tag.clear}>
                     {tag.label}
                     <X className="h-3 w-3" />
                   </Badge>
@@ -277,7 +286,7 @@ const Products: React.FC = () => {
             ) : paginated.length > 0 ? (
               <ProductGrid products={paginated} columns={3} />
             ) : (
-              <div className="text-center py-20 text-muted-foreground">
+              <div className="rounded-[1.75rem] border border-dashed border-border bg-white/60 py-20 text-center text-muted-foreground">
                 No products found. Try adjusting your filters.
               </div>
             )}
