@@ -20,7 +20,7 @@ const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({ onTranscript }) =
       return;
     }
 
-    const apiKey = localStorage.getItem("openai_api_key");
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
     if (!apiKey) {
       toast.error("Please set your OpenAI API key in settings (click the mic and hold)");
       const key = prompt("Enter your OpenAI API key for voice search:");
@@ -104,6 +104,7 @@ const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({ onTranscript }) =
   return (
     <div className="relative flex items-center">
       <Button
+        type="button"
         variant="ghost"
         size="icon"
         onClick={handleClick}
