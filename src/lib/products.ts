@@ -161,7 +161,25 @@ export const fetchCategories = async (): Promise<CategoryOption[]> => {
 
   const data = (await response.json()) as ApiCategory[];
 
-  return data.map((category) => ({
+  // Filter out invalid categories - keep only those with valid names and slugs
+  const validCategories = data.filter((category) => {
+    // Check if name and slug are valid strings (no code, emails, or suspicious patterns)
+    const name = String(category.name || "").trim();
+    const slug = String(category.slug || "").trim();
+
+    // Reject if empty
+    if (!name || !slug) return false;
+
+    // Reject if contains suspicious patterns (code, emails, special chars)
+    const hasSuspiciousPattern =
+      /[=;(){}\[\]<>'"\/\\]/.test(slug) || // Code-like characters
+      /@/.test(slug) || // Email-like
+      /^import\s|^os\.|^cmd|=DDE/.test(name); // Code keywords
+
+    return !hasSuspiciousPattern;
+  });
+
+  return validCategories.map((category) => ({
     id: category.id,
     name: category.name,
     slug: category.slug,

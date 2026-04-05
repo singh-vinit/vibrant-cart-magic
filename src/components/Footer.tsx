@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
       <div className="container py-14">
         <div className="grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
           <div className="max-w-md space-y-4">
-            <h4 className="text-lg font-semibold uppercase tracking-[0.28em]">ShopZone</h4>
+            <h4 className="text-lg font-semibold uppercase tracking-[0.28em]">SuperK</h4>
             <p className="text-sm text-secondary-foreground/72">
               A quicker, calmer way to browse standout finds across fashion, home, and everyday tech.
             </p>
@@ -46,7 +46,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
         <div className="mt-6 text-xs text-secondary-foreground/55">
-          © 2026 ShopZone. All rights reserved.
+          © 2026 SuperK. All rights reserved.
         </div>
       </div>
     </footer>

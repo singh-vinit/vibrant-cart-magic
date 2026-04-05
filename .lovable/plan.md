@@ -1,6 +1,6 @@
 
 
-# ShopZone — Revised Plan
+# SuperK — Revised Plan
 
 ## Overview
 Build a vibrant, mobile-first multi-category ecommerce site with React + Vite + Tailwind + shadcn/ui. Voice search will call OpenAI Whisper directly from the browser.
@@ -13,7 +13,7 @@ Build a vibrant, mobile-first multi-category ecommerce site with React + Vite + 
 ## Pages
 
 ### Homepage (`/`)
-- Sticky Navbar: "ShopZone" gradient logo, search bar + mic button, cart icon with Badge
+- Sticky Navbar: "SuperK" gradient logo, search bar + mic button, cart icon with Badge
 - Hero: 3-slide auto-carousel (4s interval, dot indicators)
 - Category Row: horizontal scroll, circular icon cards
 - Trending Now: horizontal scrollable ProductCards

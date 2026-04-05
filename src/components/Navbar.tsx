@@ -42,7 +42,7 @@ const Navbar: React.FC = () => {
           <SheetContent side="left" className="bg-background/95">
             <SheetHeader>
               <SheetTitle className="text-left text-xl font-semibold uppercase tracking-[0.2em] text-secondary">
-                ShopZone
+                SuperK
               </SheetTitle>
             </SheetHeader>
             <div className="flex flex-col gap-4 mt-6">
@@ -65,12 +65,12 @@ const Navbar: React.FC = () => {
         {/* Logo */}
         <Link to="/" className="hidden shrink-0 md:block">
           <span className="text-xl font-semibold uppercase tracking-[0.28em] text-secondary">
-            ShopZone
+            SuperK
           </span>
         </Link>
         <Link to="/" className="shrink-0 md:hidden">
           <span className="text-base font-semibold uppercase tracking-[0.24em] text-secondary">
-            ShopZone
+            SuperK
           </span>
         </Link>
 
