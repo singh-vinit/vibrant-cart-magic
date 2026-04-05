@@ -154,35 +154,178 @@ export const fetchProducts = async (params: FetchProductsParams = {}): Promise<P
 };
 
 export const fetchCategories = async (): Promise<CategoryOption[]> => {
-  const response = await fetch(`${API_BASE}/categories`);
-  if (!response.ok) {
-    throw new Error(`Categories API failed with status ${response.status}`);
-  }
+  const response = categories;
 
-  const data = (await response.json()) as ApiCategory[];
+  // const data = (await response.json()) as ApiCategory[];
+  const data = response
 
-  // Filter out invalid categories - keep only those with valid names and slugs
-  const validCategories = data.filter((category) => {
-    // Check if name and slug are valid strings (no code, emails, or suspicious patterns)
-    const name = String(category.name || "").trim();
-    const slug = String(category.slug || "").trim();
-
-    // Reject if empty
-    if (!name || !slug) return false;
-
-    // Reject if contains suspicious patterns (code, emails, special chars)
-    const hasSuspiciousPattern =
-      /[=;(){}\[\]<>'"\/\\]/.test(slug) || // Code-like characters
-      /@/.test(slug) || // Email-like
-      /^import\s|^os\.|^cmd|=DDE/.test(name); // Code keywords
-
-    return !hasSuspiciousPattern;
-  });
-
-  return validCategories.map((category) => ({
+  return data.map((category) => ({
     id: category.id,
     name: category.name,
     slug: category.slug,
     ...getCategoryVisual(category.slug),
   }));
 };
+
+const categories = [
+  {
+    "id": 1,
+    "name": "Clothes",
+    "slug": "clothes",
+    "image": "https://example.com/images/clothing.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "Shoes",
+    "slug": "shoes",
+    "image": "https://example.com/images/footwear.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 3,
+    "name": "Electronics",
+    "slug": "electronics",
+    "image": "https://example.com/images/electronics.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 4,
+    "name": "Home & Kitchen",
+    "slug": "home-kitchen",
+    "image": "https://example.com/images/home-kitchen.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 5,
+    "name": "Beauty & Personal Care",
+    "slug": "beauty-personal-care",
+    "image": "https://example.com/images/beauty.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 6,
+    "name": "Sports & Fitness",
+    "slug": "sports-fitness",
+    "image": "https://example.com/images/sports.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 7,
+    "name": "Toys & Games",
+    "slug": "toys-games",
+    "image": "https://example.com/images/toys.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 8,
+    "name": "Books",
+    "slug": "books",
+    "image": "https://example.com/images/books.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 9,
+    "name": "Groceries",
+    "slug": "groceries",
+    "image": "https://example.com/images/groceries.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 10,
+    "name": "Accessories",
+    "slug": "accessories",
+    "image": "https://example.com/images/accessories.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 11,
+    "name": "Jewelry",
+    "slug": "jewelry",
+    "image": "https://example.com/images/jewelry.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 12,
+    "name": "Watches",
+    "slug": "watches",
+    "image": "https://example.com/images/watches.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 13,
+    "name": "Furniture",
+    "slug": "furniture",
+    "image": "https://example.com/images/furniture.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 14,
+    "name": "Automotive",
+    "slug": "automotive",
+    "image": "https://example.com/images/automotive.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 15,
+    "name": "Pet Supplies",
+    "slug": "pet-supplies",
+    "image": "https://example.com/images/pets.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 16,
+    "name": "Office Supplies",
+    "slug": "office-supplies",
+    "image": "https://example.com/images/office.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 17,
+    "name": "Baby Products",
+    "slug": "baby-products",
+    "image": "https://example.com/images/baby.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 18,
+    "name": "Health & Wellness",
+    "slug": "health-wellness",
+    "image": "https://example.com/images/health.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 19,
+    "name": "Garden & Outdoors",
+    "slug": "garden-outdoors",
+    "image": "https://example.com/images/garden.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  },
+  {
+    "id": 20,
+    "name": "Stationery",
+    "slug": "stationery",
+    "image": "https://example.com/images/stationery.jpg",
+    "creationAt": "2026-04-05T10:00:00.000Z",
+    "updatedAt": "2026-04-05T10:00:00.000Z"
+  }
+]

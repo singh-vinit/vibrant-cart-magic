@@ -38,7 +38,7 @@ const CategoryRow: React.FC = () => {
         <button
           key={cat.slug}
           onClick={() => navigate(`/products?category=${encodeURIComponent(cat.slug)}`)}
-          className="group flex min-w-[140px] items-center gap-3 rounded-full border border-border/80 bg-white/75 px-4 py-3 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-md"
+          className="group flex items-center gap-3 rounded-full border border-border/80 bg-white/75 px-4 py-3 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-foreground/15 hover:shadow-md"
         >
           <div
             className="flex h-12 w-12 items-center justify-center rounded-full text-xl transition-transform group-hover:scale-110"

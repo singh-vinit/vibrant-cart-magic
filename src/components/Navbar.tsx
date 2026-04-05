@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Search, ShoppingCart, Menu, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,9 +14,15 @@ const navLinks = [
 ];
 
 const Navbar: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get("search") || "";
   const [search, setSearch] = useState("");
   const { totalItems } = useCart();
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    setSearch(searchQuery);
+  }, [searchQuery]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
